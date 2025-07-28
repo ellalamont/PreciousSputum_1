@@ -71,19 +71,24 @@ Run1_pipeSummary <- Run1_pipeSummary %>% filter(Type != 'NA')
 # Add a column for the Run
 Run1_pipeSummary <- Run1_pipeSummary %>% mutate(Run = "PredictTB_Run1")
 
-### MARMOSET DATA FROM PROBETEST3
+### MARMOSET DATA FROM PROBETEST 3
 # Pull out the marmoset information from ProbeTest3
 ProbeTest3_pipeSummary <- read.csv("Data/ProbeTest3/ProbeTest3_Pipeline.Summary.Details.csv") 
 Marmoset_pipeSummary <- ProbeTest3_pipeSummary %>% filter(SampleID %in% c("BQ12_10_Probe_3A_S29", "BQ12_3_Probe_4A_50_S27", "BQ12_8_Probe_4A_50_S28"))
 Marmoset_pipeSummary <- Marmoset_pipeSummary %>% mutate(Run = "ProbeTest3")
 
+# BROTH DATA FROM PROBETEST 5
+ProbeTest5_pipeSummary <- read.csv("Data/ProbeTest5/ProbeTest5_Pipeline.Summary.Details_moreTrim.csv") 
+Broth_pipeSummary <- ProbeTest5_pipeSummary %>% filter(SampleID %in% c("H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9"))
 
 
 # Merge the pipeSummaries
 All_pipeSummary <- merge(Run1_pipeSummary, Marmoset_pipeSummary, all = T)
+All_pipeSummary <- merge(All_pipeSummary, Broth_pipeSummary, all = T)
 
 # Merge two columns
 All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)) %>%
+  mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
   select(-Sample_Type)
 
 All_pipeSummary$X <- NULL
@@ -100,6 +105,16 @@ All_pipeSummary$X <- NULL
 
 # All_pipeSummary <- All_pipeSummary %>% mutate(Sputum_Number = str_extract(SampleID, "S_[0-9]+"))
 
+###########################################################
+########### LIST OF SAMPLES PASSING INSPECTION ############
+
+GoodSampleList <- All_pipeSummary %>%
+  filter(N_Genomic >= 1000000 & AtLeast.10.Reads >= (4499*0.8)) %>% 
+  filter(!SampleID %in% c("THP1_1e6_1_S67", "W2_14005_S56")) %>%
+  pull(SampleID)
+
+
+
 
 
 ###########################################################
@@ -108,12 +123,17 @@ All_pipeSummary$X <- NULL
 Run1_tpm <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.TPM.csv")
 
 # Just pull the tpm of the THP1 spiked from another run: THP1 1e6_1 (Predict rack 2 box 1 I04)
-# Need THP1 1e6_1a from the Januaray run
+# Need THP1 1e6_1a from the Januaray run. Also need 
 ProbeTest5_tpm <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.TPM_moreTrim.csv") 
 ProbeTest5_tpm_subset <- ProbeTest5_tpm %>% select(X, THP1_1e6_1a_S28)
+ProbeTest5_tpm_Broth <- ProbeTest5_tpm %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9)
 
-# Merge 
-# All_tpm <- merge(ProbeTest5_tpm_subset, RIF_txn_tpm, all = T)
+# Get the Marmoset TPM
+ProbeTest3_tpm <- read.csv("Data/ProbeTest3/ProbeTest3_Mtb.Expression.Gene.Data.TPM.csv")
+ProbeTest3_tpm_marm <- ProbeTest3_tpm %>% select(X, BQ12_10_Probe_3A_S29, BQ12_3_Probe_4A_50_S27, BQ12_8_Probe_4A_50_S28)
+
+
+
 
 # Adjust the names so they are slightly shorter
 # names(All_tpm) <- gsub(x = names(All_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
@@ -128,15 +148,29 @@ ProbeTest5_tpm_subset <- ProbeTest5_tpm %>% select(X, THP1_1e6_1a_S28)
 ###########################################################
 ###### MAKE TPM WITH ALL CLINICAL AND ANIMAL MODELS #######
 
-# First need to pull the marmoset data - from probe test 3
+# Merge the tpms I collected above
+All_tpm <- merge(Run1_tpm, ProbeTest3_tpm_marm, all = T)
+All_tpm <- merge(All_tpm, ProbeTest5_tpm_Broth)
+
+# Just keep the samples passing filter
+All_tpm <- All_tpm %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
 
 
 
+###########################################################
+############### IMPORT AND PROCESS RAW READS ##############
 
+Run1_RawReads <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.readsM.csv")
 
+ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv") 
+ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9)
 
+ProbeTest3_RawReads <- read.csv("Data/ProbeTest3/Mtb.Expression.Gene.Data.readsM_old.csv")
+ProbeTest3_RawReads_marm <- ProbeTest3_RawReads %>% select(X, BQ12_10_Probe_3A_S29, BQ12_3_Probe_4A_50_S27, BQ12_8_Probe_4A_50_S28)
 
+# Merge the RawReads I collected above
+All_RawReads <- merge(Run1_RawReads, ProbeTest3_RawReads_marm, all = T)
+All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
 
-
-
-
+# Just keep the samples passing filter
+All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
