@@ -11,6 +11,7 @@ my_tpm <- All_tpm
 names(my_tpm) <- gsub(x = names(my_tpm), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it
 my_tpm <- my_tpm %>% column_to_rownames("X")
 
+pipeSummary_2 <- All_pipeSummary %>% filter(SampleID %in% c(SputumSampleList, BrothSampleList, MarmSampleList, MimicSampleList, RabbitSampleList)) %>%mutate(SampleID = gsub("_S.*", "", SampleID))
 
 
 # Plot basics
@@ -38,7 +39,7 @@ my_annotation_colors <- list(
 
 # Define UI ----
 ui <- fluidPage(
-  titlePanel("PreciousSputum Run 1 Pheatmap"),
+  titlePanel("Precious Sputum Run 1 Pheatmap"),
   
   fluidRow(
     
@@ -181,9 +182,16 @@ server <- function(input, output, session) {
     }
     
     
+    # Sort out the color categories
+    my_color_annotation <- pipeSummary_2 %>%
+      filter(SampleID %in% colnames(my_data)) %>%
+      column_to_rownames("SampleID") %>%
+      select(Type2)
+    
+    
     p <- pheatmap(my_data, 
-                  # annotation_col = All_pipeSummary["Type2"], 
-                  # annotation_colors = my_annotation_colors,
+                  annotation_col = my_color_annotation, 
+                  annotation_colors = my_annotation_colors,
                   # col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
                   scale = input$my_scaling, 
                   display_numbers = input$show_numbers,
