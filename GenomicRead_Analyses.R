@@ -46,7 +46,7 @@ N_Genomic_Fig1 <- All_pipeSummary %>%
   geom_hline(yintercept = 1000000, linetype = "dashed", alpha = 0.5) + 
   scale_y_continuous(limits = c(0,12000000), breaks = seq(0, 12000000, 2000000)) +
   labs(title = "PredictTB Run 1: N_Genomic for all sample types",
-       subtitle = "Marmoset from ProbeTest3", 
+       subtitle = "Marmoset from ProbeTest3, broth from ProbeTest5", 
        x = "Sample type", 
        y = "Number of reads mapping to H37Rv") + 
   # scale_y_continuous(limits = c(0,4500), breaks = seq(0, 4500, 500)) + 

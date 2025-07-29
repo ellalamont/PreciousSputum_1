@@ -65,7 +65,7 @@ options(scipen = 0) # To revert back to default
 Run1_pipeSummary <- read.csv("Data/PredictTB_Run1/Pipeline.Summary.Details.csv") 
 
 # Just get the samples I want 
-# Run1_pipeSummary <- Run1_pipeSummary %>% filter(Type != "TBAIT")
+Run1_pipeSummary <- Run1_pipeSummary %>% filter(Type != "TBAIT")
 Run1_pipeSummary <- Run1_pipeSummary %>% filter(Type != 'NA')
 
 # Add a column for the Run
@@ -114,13 +114,17 @@ GoodSampleList <- All_pipeSummary %>%
   pull(SampleID)
 
 
+SputumSampleList <- GoodSampleList[grep("^W", GoodSampleList)]
 
-
+BrothSampleList <- All_pipeSummary %>% 
+  filter(str_detect(SampleID, "Broth")) %>%
+  pull(SampleID)
 
 ###########################################################
 ############### IMPORT AND PROCESS TPM VALUES #############
 
 Run1_tpm <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.TPM.csv")
+Run1_tpm <- Run1_tpm %>% select(-contains("TBAIT"))
 
 # Just pull the tpm of the THP1 spiked from another run: THP1 1e6_1 (Predict rack 2 box 1 I04)
 # Need THP1 1e6_1a from the Januaray run. Also need 
@@ -161,6 +165,7 @@ All_tpm <- All_tpm %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "
 ############### IMPORT AND PROCESS RAW READS ##############
 
 Run1_RawReads <- read.csv("Data/PredictTB_Run1/Mtb.Expression.Gene.Data.readsM.csv")
+Run1_RawReads <- Run1_RawReads %>% select(-contains("TBAIT"))
 
 ProbeTest5_RawReads <- read.csv("Data/ProbeTest5/ProbeTest5_Mtb.Expression.Gene.Data.readsM_moreTrim.csv") 
 ProbeTest5_RawReads_Broth <- ProbeTest5_RawReads %>% select(X, H37Ra_Broth_4_S7, H37Ra_Broth_5_S8, H37Ra_Broth_6_S9)
