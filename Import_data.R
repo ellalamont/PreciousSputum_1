@@ -120,6 +120,12 @@ BrothSampleList <- All_pipeSummary %>%
   filter(str_detect(SampleID, "Broth")) %>%
   pull(SampleID)
 
+MarmSampleList <- GoodSampleList[grep("^BQ", GoodSampleList)]
+
+MimicSampleList <- GoodSampleList[grep("^HN878", GoodSampleList)]
+
+RabbitSampleList <- GoodSampleList[grep("Cav", GoodSampleList)]
+
 ###########################################################
 ############### IMPORT AND PROCESS TPM VALUES #############
 
