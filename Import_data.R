@@ -91,6 +91,8 @@ All_pipeSummary <- All_pipeSummary %>% mutate(Type = coalesce(Type, Sample_Type)
   mutate(Type2 = coalesce(Type2, Sample_Type)) %>% 
   select(-Sample_Type)
 
+All_pipeSummary <- All_pipeSummary %>% mutate(CFU_per_g.or.mL = coalesce(CFU_per_g, CFU_per_mL))
+
 All_pipeSummary$X <- NULL
 
 
