@@ -117,8 +117,8 @@ PCA_BatchCorrected_2 <- my_PCA_cpm_df %>%
   # geom_text_repel(aes(label = Week), size= 2.5, box.padding = 0.4, segment.color = NA, max.overlaps = Inf) + 
   labs(title = "PCA: >1M reads and >80% genes with at least 10 reads",
        subtitle = "Batch corrected -> CPM",
-       x = paste0("PC1: ", summary_PCA[1,1], "%"),
-       y = paste0("PC2: ", summary_PCA[2,1], "%")) +
+       x = paste0("PC1: ", summary_PCA_cpm[1,1], "%"),
+       y = paste0("PC2: ", summary_PCA_cpm[2,1], "%")) +
   my_plot_themes
 PCA_BatchCorrected_2
 ggsave(PCA_BatchCorrected_2,

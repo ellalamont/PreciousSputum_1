@@ -41,7 +41,7 @@ cbPalette_2 <- c( "#0072B2", "#999999") # Blue and Grey
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 <-  c("#bfbfbf", "#56B4E9")
 cbPalette3 <-  c("#bfbfbf", "#E69F00")
-cbPalette4 <- c("#56B4E9", "#009E73", "#F0E442")
+cbPalette4 <- c("#56B4E9", "#009E73", "#F0E442","#CC79A7")
 c25 <- c(
   "dodgerblue2", "#E31A1C", "green4",
   "#6A3D9A","#FF7F00","black", "gold1",

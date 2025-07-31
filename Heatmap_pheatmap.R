@@ -42,7 +42,7 @@ my_annotation_colors <- list(
 ###########################################################
 ######################## PHEATMAP #########################
 
-pheatmap(All_tpm_matrix[1:10,], scale = "row")
+# pheatmap(All_tpm_matrix[1:10,], scale = "row")
 
 # Need to shorten the names first
 names(All_tpm2) <- gsub(x = names(All_tpm2), pattern = "_S.*", replacement = "") # This regular expression removes the _S and everything after it (I think...)
@@ -51,7 +51,7 @@ pipeSummary_3 <- pipeSummary_2 %>%
 
 testing <- All_tpm2 %>% subset(rownames(All_tpm2) %in% allGeneSetList[["MTb.TB.Phenotypes.TopGeneSets"]][["human_sputum: top 25 genes"]]) # Guess this doesn't need to be a matrix
 
-pheatmap(testing, scale = "row")
+# pheatmap(testing, scale = "row")
 
 
 
@@ -86,15 +86,15 @@ pheatmap(testing,
 ###########################################################
 ######################## ALL DATA #########################
 
-pheatmap(my_tpm , 
-         # annotation_col = my_pipeSummary["Week"], 
-         # annotation_row = gene_annot["Product"],
+pheatmap(All_tpm2, 
+         annotation_col = annotation_df, 
          annotation_colors = my_annotation_colors,
          scale = "row")
 
-my_tpm_2 <- my_tpm[rowSums(my_tpm == 0) != ncol(my_tpm), ]
 
-my_tpm_2_matrix <- my_tpm_2 %>% 
+All_tpm3 <- All_tpm2[rowSums(All_tpm2 == 0) != ncol(All_tpm2), ]
+
+All_tpm3_matrix <- All_tpm3 %>% 
   # rename("W0_250754" = "S_250754",
   #        "W0_355466" = "S_355466",
   #        "W0_503557" = "S_503557",
@@ -103,27 +103,34 @@ my_tpm_2_matrix <- my_tpm_2 %>%
   #        "W2_577208" = "S_577208") %>%
   as.matrix()
 
-testing2 <- testing %>% 
-  as.matrix()
-
-
-pheatmap(testing2, 
-         annotation_col = my_pipeSummary["Week"], 
-         scale = "row",
-         cutree_rows = 5,
-         cutree_cols = 5)
-
 
 ###########################################################
 ############### ALL DATA WITH CLUSTERING ##################
 # https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 
-pheatmap(my_tpm_2_matrix, 
-         # annotation_row = my_gene_col, 
-         annotation_col = my_pipeSummary["Week"],
-         scale = "row",
-         cutree_rows = 5,
-         cutree_cols = 5)
+# Grab the columns needed to give colors
+Color_annotation_df <- pipeSummary_3 %>%
+  filter(SampleID %in% colnames(All_tpm3)) %>%
+  select(SampleID, Type2) %>%
+  column_to_rownames("SampleID")
+
+# Reorder annotation rows to match columns of tpm file
+Color_annotation_df <- Color_annotation_df[colnames(All_tpm3), , drop = FALSE]
+
+
+
+heatmap_all <- pheatmap(All_tpm3_matrix, 
+         annotation_col = Color_annotation_df, 
+         annotation_colors = my_annotation_colors,
+         scale = "row")
+ggsave(heatmap_all,
+       file = "heatmap_all_1.pdf",
+       path = "Figures/Heatmaps",
+       width = 20, height = 20, units = "in")
+
+
+
+######## NOTHING BELOW HAS BEEN DONE #########
 
 # Try to get good row annotations based on MTb functional group
 # Start with MTb.TB.Phenotypes.AllGeneSets
