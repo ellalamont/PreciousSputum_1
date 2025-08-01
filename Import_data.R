@@ -187,3 +187,28 @@ All_RawReads <- merge(All_RawReads, ProbeTest5_RawReads_Broth)
 
 # Just keep the samples passing filter
 All_RawReads <- All_RawReads %>% select("X", all_of(GoodSampleList), "H37Ra_Broth_4_S7", "H37Ra_Broth_5_S8", "H37Ra_Broth_6_S9")
+
+
+
+###########################################################
+################ NEW DATA WITH FEWER SPUTUM ###############
+
+# Don't want to include all the sputum in the paper, want a random subset of ~12
+
+# First remove all the relapse, then randomly choose
+sputumOnly_pipeSummary <- All_pipeSummary %>% filter(str_detect(Type, "sputum"))
+W0CureSputumOnly_pipeSummary <- sputumOnly_pipeSummary %>% filter(Outcome == "Cure" & Week == "Week 0")
+
+# Randomly choose 12 sputum samples
+set.seed(5) # 3, 9
+SputumSubset_pipeSummary <- slice_sample(sputumOnly_pipeSummary, n = 12)
+SputumSubset_list <- SputumSubset_pipeSummary %>% pull(SampleID)
+
+
+
+
+
+
+
+
+

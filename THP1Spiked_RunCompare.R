@@ -27,7 +27,7 @@ my_plot_themes <- theme_bw() +
 ################ COLLECT DATA OF INTEREST #################
 
 Run1_THP1Spike <- Run1_tpm %>% select(X, THP1_1e6_1_S67)
-ProbeTest5_tpm_subset
+# ProbeTest5_tpm_subset
 
 merged_THP1Spike <- merge(Run1_THP1Spike, ProbeTest5_tpm_subset, all = T) %>%
   rename(ProbeTest5_THP1.Ra1e6 = THP1_1e6_1a_S28,
@@ -63,6 +63,7 @@ ScatterCorr <- merged_THP1Spike_Log10 %>%
   # scale_y_continuous(limits = c(0,14000), breaks = seq(0, 14000, 2000)) + 
   my_plot_themes
 ScatterCorr
+ggplotly(ScatterCorr)
 ggsave(ScatterCorr,
        file = paste0("THP1Spiked1e6_CompareRuns_AllGenes.pdf"),
        path = "Figures/THP1Spiked_RunCompare",
