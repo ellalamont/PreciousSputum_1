@@ -53,10 +53,10 @@ N_Genomic_Fig1 <- All_pipeSummary %>%
   # scale_x_continuous(trans = "log10") + 
   my_plot_themes
 N_Genomic_Fig1
-ggsave(N_Genomic_Fig1,
-       file = paste0("N_Genomic_Fig1.pdf"),
-       path = "Figures/GenomicRead_Analyses",
-       width = 8, height = 5, units = "in")
+# ggsave(N_Genomic_Fig1,
+#        file = paste0("N_Genomic_Fig1.pdf"),
+#        path = "Figures/GenomicRead_Analyses",
+#        width = 8, height = 5, units = "in")
 
 
 
